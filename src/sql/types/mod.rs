@@ -5,3 +5,5 @@
 mod expression;
 mod schema;
 mod value;
+
+pub use value::{DataType, Label, Row, Rows, Value};
