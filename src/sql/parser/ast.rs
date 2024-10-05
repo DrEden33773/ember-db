@@ -285,7 +285,7 @@ pub enum Operator {
     Eq(Box<Expression>, Box<Expression>),
     /// a > b
     Gt(Box<Expression>, Box<Expression>),
-    /// a != b
+    /// a >= b
     Ge(Box<Expression>, Box<Expression>),
     /// IS NULL or IS NAN
     Is(Box<Expression>, Literal),
