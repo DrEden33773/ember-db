@@ -6,4 +6,5 @@ mod expression;
 mod schema;
 mod value;
 
+pub use expression::Expression;
 pub use value::{DataType, Label, Row, Rows, Value};

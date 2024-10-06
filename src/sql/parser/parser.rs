@@ -121,7 +121,7 @@ impl Parser<'_> {
             Token::Keyword(Keyword::Select) => self.parse_select(),
             Token::Keyword(Keyword::Update) => self.parse_update(),
 
-            token => errinput!("unexpected token `{token}`"),
+            invalid_token => errinput!("unexpected token `{invalid_token}`"),
         }
     }
 

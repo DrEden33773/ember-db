@@ -5,7 +5,9 @@
 //! storage, while the [`Raft`] engine submits commands through Raft consensus
 //! before dispatching to the [`Local`] engine on each node.
 
+#![allow(clippy::module_inception)]
+
+mod engine;
 mod local;
 mod raft;
 mod session;
-mod the_engine;
