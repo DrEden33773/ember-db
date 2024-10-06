@@ -3,7 +3,7 @@ use crate::error::Result;
 
 use std::{iter::Peekable, str::Chars};
 
-/// The lexer (lexical analyzer) preprocesses raw SQL strings into a sequence of
+/// The lexer (lexical analyzer) pre-processes raw SQL strings into a sequence of
 /// lexical tokens (e.g. keyword, number, string, etc.), which are passed on to
 /// the SQL parser. In doing so, it strips away basic syntactic noise such as
 /// whitespace, case, and quotes, and performs initial symbol validation.
@@ -31,19 +31,19 @@ pub enum Token {
     /// .
     Period,
     /// =
-    Eq,
+    Equal,
     /// !=
-    Ne,
+    NotEqual,
     /// >
-    Gt,
+    GreaterThan,
     /// >=
-    Ge,
+    GreaterThanOrEqual,
     /// <
-    Lt,
+    LessThan,
     /// <=
-    Le,
+    LessThanOrEqual,
     /// <>
-    Lg,
+    LessOrGreatThan,
     /// +
     Plus,
     /// -
@@ -78,13 +78,13 @@ impl std::fmt::Display for Token {
             Self::Ident(s) => s,
             Self::Keyword(k) => return k.fmt(f),
             Self::Period => ".",
-            Self::Eq => "=",
-            Self::Ne => "!=",
-            Self::Gt => ">",
-            Self::Ge => ">=",
-            Self::Lt => "<",
-            Self::Le => "<=",
-            Self::Lg => "<>",
+            Self::Equal => "=",
+            Self::NotEqual => "!=",
+            Self::GreaterThan => ">",
+            Self::GreaterThanOrEqual => ">=",
+            Self::LessThan => "<",
+            Self::LessThanOrEqual => "<=",
+            Self::LessOrGreatThan => "<>",
             Self::Plus => "+",
             Self::Minus => "-",
             Self::Asterisk => "*",
@@ -510,9 +510,9 @@ impl<'a> Lexer<'a> {
         let mut token = self.next_if_map(|c| {
             Some(match c {
                 '.' => Token::Period,
-                '=' => Token::Eq,
-                '>' => Token::Gt,
-                '<' => Token::Lt,
+                '=' => Token::Equal,
+                '>' => Token::GreaterThan,
+                '<' => Token::LessThan,
                 '+' => Token::Plus,
                 '-' => Token::Minus,
                 '*' => Token::Asterisk,
@@ -531,13 +531,13 @@ impl<'a> Lexer<'a> {
         // Handle two-character tokens, e.g. !=.
         token = match token {
             // `! =` ~ `!=`
-            Token::Exclamation if self.next_is('=') => Token::Ne,
+            Token::Exclamation if self.next_is('=') => Token::NotEqual,
             // `> =` ~ `>=`
-            Token::Gt if self.next_is('=') => Token::Ge,
+            Token::GreaterThan if self.next_is('=') => Token::GreaterThanOrEqual,
             // `< >` ~ `<>`
-            Token::Lt if self.next_is('>') => Token::Lg,
+            Token::LessThan if self.next_is('>') => Token::LessOrGreatThan,
             // `> =` ~ `>=`
-            Token::Lt if self.next_is('=') => Token::Le,
+            Token::LessThan if self.next_is('=') => Token::LessThanOrEqual,
             token => token,
         };
         Some(token)

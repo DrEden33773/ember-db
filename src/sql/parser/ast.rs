@@ -30,15 +30,15 @@ impl Expression {
             Self::Operator(Add(lhs, rhs))
             | Self::Operator(And(lhs, rhs))
             | Self::Operator(Divide(lhs, rhs))
-            | Self::Operator(Eq(lhs, rhs))
+            | Self::Operator(Equal(lhs, rhs))
             | Self::Operator(Exponentiate(lhs, rhs))
-            | Self::Operator(Gt(lhs, rhs))
-            | Self::Operator(Ge(lhs, rhs))
-            | Self::Operator(Lt(lhs, rhs))
-            | Self::Operator(Le(lhs, rhs))
+            | Self::Operator(GreaterThan(lhs, rhs))
+            | Self::Operator(GreaterThanOrEqual(lhs, rhs))
+            | Self::Operator(LessThan(lhs, rhs))
+            | Self::Operator(LessThanOrEqual(lhs, rhs))
             | Self::Operator(Like(lhs, rhs))
             | Self::Operator(Multiply(lhs, rhs))
-            | Self::Operator(Ne(lhs, rhs))
+            | Self::Operator(NotEqual(lhs, rhs))
             | Self::Operator(Or(lhs, rhs))
             | Self::Operator(Remainder(lhs, rhs))
             | Self::Operator(Subtract(lhs, rhs)) => lhs.walk(visitor) && rhs.walk(visitor),
@@ -74,15 +74,15 @@ impl Expression {
             Self::Operator(Add(lhs, rhs))
             | Self::Operator(And(lhs, rhs))
             | Self::Operator(Divide(lhs, rhs))
-            | Self::Operator(Eq(lhs, rhs))
+            | Self::Operator(Equal(lhs, rhs))
             | Self::Operator(Exponentiate(lhs, rhs))
-            | Self::Operator(Gt(lhs, rhs))
-            | Self::Operator(Ge(lhs, rhs))
-            | Self::Operator(Lt(lhs, rhs))
-            | Self::Operator(Le(lhs, rhs))
+            | Self::Operator(GreaterThan(lhs, rhs))
+            | Self::Operator(GreaterThanOrEqual(lhs, rhs))
+            | Self::Operator(LessThan(lhs, rhs))
+            | Self::Operator(LessThanOrEqual(lhs, rhs))
             | Self::Operator(Like(lhs, rhs))
             | Self::Operator(Multiply(lhs, rhs))
-            | Self::Operator(Ne(lhs, rhs))
+            | Self::Operator(NotEqual(lhs, rhs))
             | Self::Operator(Or(lhs, rhs))
             | Self::Operator(Remainder(lhs, rhs))
             | Self::Operator(Subtract(lhs, rhs)) => {
@@ -282,19 +282,19 @@ pub enum Operator {
     Or(Box<Expression>, Box<Expression>),
 
     /// a = b
-    Eq(Box<Expression>, Box<Expression>),
+    Equal(Box<Expression>, Box<Expression>),
     /// a > b
-    Gt(Box<Expression>, Box<Expression>),
+    GreaterThan(Box<Expression>, Box<Expression>),
     /// a >= b
-    Ge(Box<Expression>, Box<Expression>),
+    GreaterThanOrEqual(Box<Expression>, Box<Expression>),
     /// IS NULL or IS NAN
     Is(Box<Expression>, Literal),
     /// a < b
-    Lt(Box<Expression>, Box<Expression>),
+    LessThan(Box<Expression>, Box<Expression>),
     /// a <= b
-    Le(Box<Expression>, Box<Expression>),
+    LessThanOrEqual(Box<Expression>, Box<Expression>),
     /// a != b
-    Ne(Box<Expression>, Box<Expression>),
+    NotEqual(Box<Expression>, Box<Expression>),
 
     /// a + b
     Add(Box<Expression>, Box<Expression>),

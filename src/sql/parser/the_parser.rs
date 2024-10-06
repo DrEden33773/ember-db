@@ -29,7 +29,7 @@ impl Parser<'_> {
         let statement = self.parse_statement()?;
         self.next_is(Token::Semicolon);
         if let Some(token) = self.lexer.next().transpose()? {
-            return errinput!("unexpected token {token}");
+            return errinput!("unexpected token `{token}`");
         }
         Ok(statement)
     }
@@ -46,7 +46,7 @@ impl Parser<'_> {
     fn next_ident(&mut self) -> Result<String> {
         match self.next()? {
             Token::Ident(ident) => Ok(ident),
-            token => errinput!("expected identifier, got {token}"),
+            token => errinput!("expected identifier, got `{token}`"),
         }
     }
 
@@ -83,7 +83,7 @@ impl Parser<'_> {
     fn expect(&mut self, expect: Token) -> Result<()> {
         let token = self.next()?;
         if token != expect {
-            return errinput!("expected token {expect}, found {token}");
+            return errinput!("expected token `{expect}`, found `{token}`");
         }
         Ok(())
     }
@@ -121,7 +121,7 @@ impl Parser<'_> {
             Token::Keyword(Keyword::Select) => self.parse_select(),
             Token::Keyword(Keyword::Update) => self.parse_update(),
 
-            token => errinput!("unexpected token {token}"),
+            token => errinput!("unexpected token `{token}`"),
         }
     }
 
@@ -135,7 +135,7 @@ impl Parser<'_> {
             match self.next()? {
                 Token::Keyword(Keyword::Only) => read_only = true,
                 Token::Keyword(Keyword::Write) => {}
-                token => return errinput!("unexpected token {token}"),
+                token => return errinput!("unexpected token `{token}`"),
             }
         }
 
@@ -146,7 +146,7 @@ impl Parser<'_> {
             self.expect(Keyword::Time.into())?;
             match self.next()? {
                 Token::Number(n) => as_of = Some(n.parse()?),
-                token => return errinput!("unexpected token {token}, wanted number"),
+                token => return errinput!("unexpected token `{token}`, wanted number"),
             }
         }
         Ok(ast::Statement::Begin { read_only, as_of })
@@ -198,7 +198,7 @@ impl Parser<'_> {
             Token::Keyword(Keyword::Float | Keyword::Double) => DataType::Float,
             Token::Keyword(Keyword::Int | Keyword::Integer) => DataType::Integer,
             Token::Keyword(Keyword::String | Keyword::Text | Keyword::Varchar) => DataType::String,
-            token => return errinput!("unexpected token {token}"),
+            token => return errinput!("unexpected token `{token}`"),
         };
         let mut column = ast::Column {
             name,
@@ -218,14 +218,14 @@ impl Parser<'_> {
                 }
                 Keyword::Null => {
                     if column.nullable.is_some() {
-                        return errinput!("nullability already set for column {}", column.name);
+                        return errinput!("nullability already set for column `{}`", column.name);
                     }
                     column.nullable = Some(true)
                 }
                 Keyword::Not => {
                     self.expect(Keyword::Null.into())?;
                     if column.nullable.is_some() {
-                        return errinput!("nullability already set for column {}", column.name);
+                        return errinput!("nullability already set for column `{}`", column.name);
                     }
                     column.nullable = Some(false)
                 }
@@ -315,12 +315,12 @@ impl Parser<'_> {
         let mut set = std::collections::BTreeMap::new();
         loop {
             let column = self.next_ident()?;
-            self.expect(Token::Eq)?;
+            self.expect(Token::Equal)?;
             let expr = (!self.next_is(Keyword::Default.into()))
                 .then(|| self.parse_expression())
                 .transpose()?;
             if set.contains_key(&column) {
-                return errinput!("column {column} set multiple times");
+                return errinput!("column `{column}` set multiple times");
             }
             set.insert(column, expr);
             if !self.next_is(Token::Comma) {
@@ -585,7 +585,7 @@ impl Parser<'_> {
                 expr
             }
 
-            token => return errinput!("expected expression atom, found {token}"),
+            token => return errinput!("expected expression atom, found `{token}`"),
         })
     }
 
@@ -610,17 +610,17 @@ impl Parser<'_> {
             let operator = match token {
                 Token::Asterisk => InfixOperator::Multiply,
                 Token::Caret => InfixOperator::Exponentiate,
-                Token::Eq => InfixOperator::Eq,
-                Token::Gt => InfixOperator::Gt,
-                Token::Ge => InfixOperator::Ge,
+                Token::Equal => InfixOperator::Equal,
+                Token::GreaterThan => InfixOperator::GreaterThan,
+                Token::GreaterThanOrEqual => InfixOperator::GreaterThanOrEqual,
                 Token::Keyword(Keyword::And) => InfixOperator::And,
                 Token::Keyword(Keyword::Like) => InfixOperator::Like,
                 Token::Keyword(Keyword::Or) => InfixOperator::Or,
-                Token::Lg => InfixOperator::Ne,
-                Token::Lt => InfixOperator::Lt,
-                Token::Le => InfixOperator::Le,
+                Token::LessOrGreatThan => InfixOperator::NotEqual,
+                Token::LessThan => InfixOperator::LessThan,
+                Token::LessThanOrEqual => InfixOperator::LessThanOrEqual,
                 Token::Minus => InfixOperator::Subtract,
-                Token::Ne => InfixOperator::Ne,
+                Token::NotEqual => InfixOperator::NotEqual,
                 Token::Percent => InfixOperator::Remainder,
                 Token::Plus => InfixOperator::Add,
                 Token::Slash => InfixOperator::Divide,
@@ -648,7 +648,7 @@ impl Parser<'_> {
             let value = match self.next()? {
                 Token::Keyword(Keyword::NaN) => ast::Literal::Float(f64::NAN),
                 Token::Keyword(Keyword::Null) => ast::Literal::Null,
-                token => return errinput!("unexpected token {token}"),
+                token => return errinput!("unexpected token `{token}`"),
             };
             let operator = match not {
                 false => PostfixOperator::Is(value),
@@ -715,23 +715,23 @@ enum InfixOperator {
     /// a / b
     Divide,
     /// a = b
-    Eq,
+    Equal,
     /// a ^ b
     Exponentiate,
     /// a > b
-    Gt,
+    GreaterThan,
     /// a >= b
-    Ge,
+    GreaterThanOrEqual,
     /// a < b
-    Lt,
+    LessThan,
     /// a <= b
-    Le,
+    LessThanOrEqual,
     /// a LIKE b
     Like,
     /// a * b
     Multiply,
     /// a != b
-    Ne,
+    NotEqual,
     /// a OR b
     Or,
     /// a % b
@@ -750,8 +750,11 @@ impl InfixOperator {
             Self::Or => 1,
             Self::And => 2,
             // Self::Not => 3
-            Self::Eq | Self::Ne | Self::Like => 4, // and Self::Is
-            Self::Gt | Self::Ge | Self::Lt | Self::Le => 5,
+            Self::Equal | Self::NotEqual | Self::Like => 4, // and Self::Is
+            Self::GreaterThan
+            | Self::GreaterThanOrEqual
+            | Self::LessThan
+            | Self::LessThanOrEqual => 5,
             Self::Add | Self::Subtract => 6,
             Self::Multiply | Self::Divide | Self::Remainder => 7,
             Self::Exponentiate => 8,
@@ -773,15 +776,15 @@ impl InfixOperator {
             Self::Add => ast::Operator::Add(lhs, rhs).into(),
             Self::And => ast::Operator::And(lhs, rhs).into(),
             Self::Divide => ast::Operator::Divide(lhs, rhs).into(),
-            Self::Eq => ast::Operator::Eq(lhs, rhs).into(),
+            Self::Equal => ast::Operator::Equal(lhs, rhs).into(),
             Self::Exponentiate => ast::Operator::Exponentiate(lhs, rhs).into(),
-            Self::Gt => ast::Operator::Gt(lhs, rhs).into(),
-            Self::Ge => ast::Operator::Ge(lhs, rhs).into(),
-            Self::Lt => ast::Operator::Lt(lhs, rhs).into(),
-            Self::Le => ast::Operator::Le(lhs, rhs).into(),
+            Self::GreaterThan => ast::Operator::GreaterThan(lhs, rhs).into(),
+            Self::GreaterThanOrEqual => ast::Operator::GreaterThanOrEqual(lhs, rhs).into(),
+            Self::LessThan => ast::Operator::LessThan(lhs, rhs).into(),
+            Self::LessThanOrEqual => ast::Operator::LessThanOrEqual(lhs, rhs).into(),
             Self::Like => ast::Operator::Like(lhs, rhs).into(),
             Self::Multiply => ast::Operator::Multiply(lhs, rhs).into(),
-            Self::Ne => ast::Operator::Ne(lhs, rhs).into(),
+            Self::NotEqual => ast::Operator::NotEqual(lhs, rhs).into(),
             Self::Or => ast::Operator::Or(lhs, rhs).into(),
             Self::Remainder => ast::Operator::Remainder(lhs, rhs).into(),
             Self::Subtract => ast::Operator::Subtract(lhs, rhs).into(),

@@ -1,3 +1,4 @@
+use crate::encoding;
 use crate::error::{Error, Result};
 use crate::sql::parser::ast;
 use crate::{errdata, errinput};
@@ -34,6 +35,8 @@ pub enum Value {
     /// A UTF-8 encoded string.
     String(String),
 }
+
+impl encoding::Value for Value {}
 
 // In code, consider Null and NaN equal, so that we can detect and process these
 // values (e.g. in index lookups, aggregation groups, etc.). SQL expressions

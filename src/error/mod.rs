@@ -66,13 +66,13 @@ impl Error {
     }
 }
 
-/// Constructs an Error::InvalidData for the given format string.
+/// Constructs an [`Error::InvalidData`] for the given format string.
 #[macro_export]
 macro_rules! errdata {
     ($($args:tt)*) => { $crate::error::Error::InvalidData(format!($($args)*)).into() };
 }
 
-/// Constructs an Error::InvalidInput for the given format string.
+/// Constructs an [`Error::InvalidInput`] for the given format string.
 #[macro_export]
 macro_rules! errinput {
     ($($args:tt)*) => { $crate::error::Error::InvalidInput(format!($($args)*)).into() };
