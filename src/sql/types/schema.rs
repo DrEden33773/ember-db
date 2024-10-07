@@ -1,7 +1,5 @@
 use super::{DataType, Value};
 use crate::encoding;
-use crate::errinput;
-use crate::error::Result;
 
 use serde::{Deserialize, Serialize};
 use std::borrow::Cow;

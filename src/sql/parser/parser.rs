@@ -675,9 +675,12 @@ const RIGHT_ASSOCIATIVE: Precedence = 0;
 
 /// Prefix operators.
 enum PrefixOperator {
-    Minus, // -a
-    Not,   // NOT a
-    Plus,  // +a
+    /// -a
+    Minus,
+    /// NOT a
+    Not,
+    /// +a
+    Plus,
 }
 
 impl PrefixOperator {
@@ -689,8 +692,8 @@ impl PrefixOperator {
         }
     }
 
-    // The operator associativity. Prefix operators are right-associative by
-    // definition.
+    /// The operator associativity. Prefix operators are right-associative by
+    /// definition.
     fn associativity(&self) -> Precedence {
         RIGHT_ASSOCIATIVE
     }
@@ -794,9 +797,12 @@ impl InfixOperator {
 
 /// Postfix operators.
 enum PostfixOperator {
-    Factorial,           // a!
-    Is(ast::Literal),    // a IS NULL | NAN
-    IsNot(ast::Literal), // a IS NOT NULL | NAN
+    /// a!
+    Factorial,
+    /// a IS NULL | NAN
+    Is(ast::Literal),
+    /// a IS NOT NULL | NAN
+    IsNot(ast::Literal),
 }
 
 impl PostfixOperator {
