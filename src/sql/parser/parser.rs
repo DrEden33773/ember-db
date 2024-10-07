@@ -35,12 +35,6 @@ impl Parser<'_> {
     }
 
     /// Fetches the next lexer token, or errors if none is found.
-    ///
-    /// # Example
-    ///
-    /// ```
-    ///
-    /// ```
     fn next(&mut self) -> Result<Token> {
         self.lexer
             .next()
